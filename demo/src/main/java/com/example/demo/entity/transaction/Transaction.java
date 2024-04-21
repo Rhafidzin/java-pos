@@ -1,15 +1,19 @@
 package com.example.demo.entity.transaction;
 
 
+import com.example.demo.entity.Product;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 @Data
-@NoArgsConstructor
+@NoArgsConstructor @AllArgsConstructor
 @Table(name = "transactions")
 public class Transaction {
 
@@ -28,6 +32,9 @@ public class Transaction {
     private Integer totalPay;
     @Column(name = "transaction_date")
     private LocalDate transactionDate;
+    @JsonIgnore
+    @OneToMany(mappedBy = "transaction", cascade = CascadeType.ALL)
+    private List<TransactionsDetail> transactionsDetails;
 
     public Transaction(Integer id) {
         this.id = id;

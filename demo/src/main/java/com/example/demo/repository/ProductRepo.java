@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface ProductRepo extends JpaRepository<Product, Integer> {
@@ -21,6 +22,8 @@ public interface ProductRepo extends JpaRepository<Product, Integer> {
     @Query("FROM Product WHERE category.id = ?1")
     List<Product> findByCategoryId(Integer id);
 
-    @Query("FROM Product p WHERE p.title LIKE %:title%")
+    @Query("FROM Product p WHERE lower(p.title) LIKE  lower(concat('%', :title, '%'))")
     List<Product> findByTitleLike(@Param("title") String title);
+
+    Product findById(Product product);
 }

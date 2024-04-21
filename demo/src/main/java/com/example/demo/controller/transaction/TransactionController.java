@@ -1,6 +1,7 @@
 package com.example.demo.controller.transaction;
 
 
+import com.example.demo.dto.ResponseRequest;
 import com.example.demo.dto.transaction.TransactionRequest;
 import com.example.demo.service.transaction.TransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,12 +16,17 @@ public class TransactionController {
     TransactionService transactionService;
 
     @GetMapping("/listtransaksi")
-    private ResponseEntity getAllTransaction(){
+    private ResponseEntity<ResponseRequest> getAllTransaction(){
         return ResponseEntity.ok(transactionService.findAllTransaction());
     }
 
+    @PostMapping("/addtransaction1")
+    private ResponseEntity<ResponseRequest> insertTransaction(@RequestBody TransactionRequest tr){
+        return ResponseEntity.ok(transactionService.insertTransaction(tr));
+    }
+
     @PostMapping("/addtransaction")
-    private ResponseEntity insertTransaction(@RequestBody TransactionRequest tr){
-        return ResponseEntity.ok(transactionService.createTransaction(tr));
+    private ResponseEntity<ResponseRequest> createTransaction(@RequestBody TransactionRequest tr){
+        return transactionService.createTransaction(tr);
     }
 }

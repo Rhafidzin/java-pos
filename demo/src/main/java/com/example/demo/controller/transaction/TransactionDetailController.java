@@ -21,6 +21,11 @@ public class TransactionDetailController {
         return ResponseEntity.ok(transactionDetailService.readAllTransactionDetail());
     }
 
+    @GetMapping("/listtransaksidetail/{id}")
+    private ResponseEntity getTransactionDetailId(@PathVariable("id") int id ){
+        return ResponseEntity.ok(transactionDetailService.findTransactionDetailId(id));
+    }
+
     @PostMapping("/addtransaksidetail")
     public ResponseEntity<ResponseRequest> insertTransactionDetail(@RequestBody TransactionDetailRequest tdr){
         return ResponseEntity.ok(transactionDetailService.createTransactionDetail(tdr));

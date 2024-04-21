@@ -16,8 +16,7 @@ public class ProductController {
     private ProductService ps;
     @PostMapping("/addproduct")
     public ResponseEntity<ResponseRequest> insertProduct(@RequestBody ProductRequest pr){
-        ResponseRequest result = ps.insert(pr);
-        return ResponseEntity.ok(result);
+        return ps.insert(pr);
     }
 
     @GetMapping("/listproduct")
@@ -29,33 +28,33 @@ public class ProductController {
     ){
         if (title == null){
 
-            return ResponseEntity.ok(ps.readAllProduct(
+            return ps.readAllProduct(
                     category_id,
                     sort_order,
                     sort_by
-            ));
+            );
         } else {
-            return ResponseEntity.ok(ps.readLikeProduct(
+            return ps.readLikeProduct(
                     title,
                     sort_order,
                     sort_by
-            ));
+            );
         }
     }
 
     @DeleteMapping("/deleteproduct/{id}")
     public ResponseEntity<ResponseRequest> deleteById(@PathVariable("id") int id){
-        return ResponseEntity.ok(ps.deleteProductId(id));
+        return ps.deleteProductId(id);
     }
 
     @GetMapping("/detailproduct/{id}")
     public ResponseEntity<ResponseRequest> getById(@PathVariable("id") int id){
-        return ResponseEntity.ok(ps.getProductId(id));
+        return ps.getProductId(id);
     }
 
     @PutMapping("/updateproduct/{id}")
     public ResponseEntity<ResponseRequest> updateProduct(@PathVariable("id") int id, @RequestBody ProductRequest pr){
-        return ResponseEntity.ok(ps.updateProduct(id, pr));
+        return ps.updateProduct(id, pr);
     }
 
     @DeleteMapping("/delete/all")
