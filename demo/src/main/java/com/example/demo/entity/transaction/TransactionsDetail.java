@@ -4,6 +4,8 @@ package com.example.demo.entity.transaction;
 import com.example.demo.dto.transaction.TransactionDetailRequest;
 import com.example.demo.entity.Product;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
@@ -28,9 +30,9 @@ public class TransactionsDetail {
             strategy = GenerationType.SEQUENCE,
             generator = "transactiondetails_id")
     private Integer id;
-    @Column(nullable = false)
+    @NotNull(message = "quantity cannot be null")
     private Integer quantity;
-    @Column(nullable = false)
+    @NotNull(message = "subtotal cannot be null")
     private Integer subtotal;
     @ManyToOne
     @JoinColumn(name = "transaction_id", referencedColumnName = "id")

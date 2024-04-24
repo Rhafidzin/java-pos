@@ -5,13 +5,12 @@ import com.example.demo.entity.transaction.TransactionsDetail;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
-import org.jetbrains.annotations.NotNull;
 
 
 import java.util.List;
@@ -31,13 +30,17 @@ public class Product {
             strategy = GenerationType.SEQUENCE,
             generator = "product_id_sequence")
     private Integer id;
-    @Column(nullable = false)
-    @Size(max = 20)
+    @NotNull(message = "title cannot be null")
+    @NotBlank(message = "title cannot be blank")
+    @Size(max = 20, message = "title maximum size is 20 character")
     private String title;
-    @Column(nullable = false)
+    @Min(1)
+    @Max(2000000000)
+    @NotNull(message = "Price cannot be null")
     private Integer price;
-    @Column(nullable = false)
-    @Size(max = 255)
+    @Size(max = 255, message = "image maximum size is 255 character")
+    @NotNull(message = "image cannot be null")
+    @NotBlank(message = "image cannot be blank")
     private String image;
     @ManyToOne
     @JoinColumn(name = "category_id")

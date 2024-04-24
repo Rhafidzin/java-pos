@@ -14,6 +14,10 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
 import java.util.HashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import static org.hibernate.validator.internal.util.Contracts.assertTrue;
 
 
 @Service
@@ -29,17 +33,25 @@ public class AuthService {
 
     public ResponseRequest signup(AuthRequest authRequest) {
         try{
+            String regexEmail = "^[a-zA-Z0-9_!#$%&’*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$";
+            if(!authRequest.getEmail().matches(regexEmail)){
+                return new ResponseRequest(500, "Email tidak sesuai");
+            }
+            String regExpn = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&+=])(?=\\S+$).{8,20}$";
+            if(!authRequest.getPassword().matches(regExpn)){
+                return new ResponseRequest(500, "Password tidak memenuhi syarat");
+            }
             UserAdmin userAdmin = new UserAdmin();
             userAdmin.setEmail(authRequest.getEmail());
             userAdmin.setPassword(passwordEncoder.encode(authRequest.getPassword()));
             userAdmin.setRole(authRequest.getRole());
             userAdmin.setCreatedAt(new Timestamp(System.currentTimeMillis()));
             userAdmin.setUpdatedAt(new Timestamp(System.currentTimeMillis()));
-            UserAdmin result = userAdminRepo.save(userAdmin);
-            if(result.getId() == null){
-                throw new Exception();
-            }
-            return new ResponseRequest(200, "Akun user berhasil dibuat", result);
+//            UserAdmin result = userAdminRepo.save(userAdmin);
+//            if(result.getId() == null){
+//                throw new Exception();
+//            }
+            return new ResponseRequest(200, "Akun user berhasil dibuat");
         } catch (Exception e){
             return  new ResponseRequest(500, e.getMessage());
         }

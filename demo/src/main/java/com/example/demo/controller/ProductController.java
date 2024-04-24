@@ -14,6 +14,7 @@ public class ProductController {
 
     @Autowired
     private ProductService ps;
+
     @PostMapping("/addproduct")
     public ResponseEntity<ResponseRequest> insertProduct(@RequestBody ProductRequest pr){
         return ps.insert(pr);
@@ -21,7 +22,7 @@ public class ProductController {
 
     @GetMapping("/listproduct")
     public ResponseEntity<ResponseRequest> getProduct(
-            @RequestParam(required = false) Integer category_id,
+            @RequestParam(required = false) String category_id,
             @RequestParam(required = false) String title,
             @RequestParam(defaultValue = "id") String sort_by,
             @RequestParam(defaultValue = "DESC") String sort_order

@@ -17,12 +17,12 @@ public class TransactionController {
 
     @GetMapping("/listtransaksi")
     private ResponseEntity<ResponseRequest> getAllTransaction(){
-        return ResponseEntity.ok(transactionService.findAllTransaction());
+        return transactionService.findAllTransaction();
     }
 
     @PostMapping("/addtransaction1")
     private ResponseEntity<ResponseRequest> insertTransaction(@RequestBody TransactionRequest tr){
-        return ResponseEntity.ok(transactionService.insertTransaction(tr));
+        return transactionService.insertTransaction(tr);
     }
 
     @PostMapping("/addtransaction")

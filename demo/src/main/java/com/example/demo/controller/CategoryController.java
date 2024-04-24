@@ -2,6 +2,7 @@ package com.example.demo.controller;
 
 
 import com.example.demo.dto.CategoryRequest;
+import com.example.demo.dto.ResponseRequest;
 import com.example.demo.service.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -20,13 +21,13 @@ public class CategoryController {
 //    }
 
     @GetMapping("/listproduct/category")
-    public ResponseEntity viewAllCategory(){
-        return ResponseEntity.ok(cs.showAllCategory());
+    public ResponseEntity<ResponseRequest> viewAllCategory(){
+        return cs.showAllCategory();
     }
 
     @PostMapping("/insert")
-    public ResponseEntity insertCategory(@RequestBody CategoryRequest cr){
-        return ResponseEntity.ok(cs.createCategory(cr));
+    public ResponseEntity<ResponseRequest> insertCategory(@RequestBody CategoryRequest cr){
+        return cs.createCategory(cr);
     }
 
 }

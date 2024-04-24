@@ -5,11 +5,14 @@ import com.example.demo.dto.ResponseRequest;
 import com.example.demo.entity.Product;
 import com.example.demo.repository.CategoryRepo;
 import com.example.demo.repository.ProductRepo;
+import jakarta.validation.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.TransactionSystemException;
 
 import java.util.List;
 import java.util.Optional;
@@ -58,8 +61,9 @@ public class ProductService {
             }
     }
 
-    public ResponseEntity<ResponseRequest> readAllProduct(Integer id, String sortDirection, String sortBy){
+    public ResponseEntity<ResponseRequest> readAllProduct(String id, String sortDirection, String sortBy){
         try{
+
             /* Cek value parameter category_id */
             if(id == null){
                 /* Jika tidak input parameter, output semua data products */
@@ -71,8 +75,15 @@ public class ProductService {
                         HttpStatus.OK
                 );
             } else {
+                if(!id.matches("[^!@#$%^&+=]")){
+                    return new ResponseEntity<>(
+                            new ResponseRequest(HttpStatus.OK.value(), "Regex"),
+                            HttpStatus.OK
+                    );
+                }
+                Sort sort = Sort.by(Sort.Direction.fromString(sortDirection), sortBy);
                 /* kondisi ketika parameter category_id !null */
-                List<Product> result = productRepo.findByCategoryId(id);
+                List<Product> result = productRepo.findByCategoryId(Integer.valueOf(id), sort);
                 if(result.isEmpty()){
                     return new ResponseEntity<>(
 
@@ -86,6 +97,7 @@ public class ProductService {
                         HttpStatus.OK
                 );
             }
+
         } catch (Exception e){
             return new ResponseEntity<>(
                     new ResponseRequest(HttpStatus.BAD_REQUEST.value(), "Data gagal diread"),
@@ -108,8 +120,9 @@ public class ProductService {
                         HttpStatus.OK
                 );
             } else {
+                Sort sort = Sort.by(Sort.Direction.fromString(sortDirection), sortBy);
                 /* kondisi ketika parameter title !null */
-                List<Product> result = productRepo.findByTitleLike(title);
+                List<Product> result = productRepo.findByTitleLike(title, sort);
                 if(result.isEmpty()){
                     return new ResponseEntity<>(
                             new ResponseRequest(HttpStatus.NOT_FOUND.value(), "Title tidak ditemukan"),
@@ -121,7 +134,6 @@ public class ProductService {
                         HttpStatus.OK
                 );
             }
-
         } catch (Exception e){
             return new ResponseEntity<>(
                     new ResponseRequest(HttpStatus.BAD_REQUEST.value(), "Terjadi kesalahan"),
@@ -159,7 +171,6 @@ public class ProductService {
 
     public ResponseEntity getProductId(int id) {
         try {
-
             Optional<Product> result = productRepo.findById(id);
             if (result.isEmpty()){
                 return new ResponseEntity<>(
@@ -189,7 +200,6 @@ public class ProductService {
                     return new ResponseEntity<>(
                             new ResponseRequest(HttpStatus.NOT_FOUND.value(), "Product ID tidak ditemukan"),
                             HttpStatus.NOT_FOUND
-
                     );
                 }
             var catId = categoryRepo.findById(pr.getCategory().getId()).isEmpty();
@@ -197,9 +207,16 @@ public class ProductService {
                     return new ResponseEntity<>(
                         new ResponseRequest(HttpStatus.NOT_FOUND.value(), "Category ID tidak ditemukan"),
                             HttpStatus.NOT_FOUND
-
                     );
                 }
+            if (pr.getTitle().isEmpty() || pr.getTitle().isBlank() ||
+                    pr.getPrice() == null || pr.getImage().isBlank() ||
+                    pr.getImage().isEmpty() ){
+                return new ResponseEntity<>(
+                        new ResponseRequest(HttpStatus.BAD_REQUEST.value(), "Data harus diisi"),
+                        HttpStatus.BAD_REQUEST
+                );
+            }
             Product update =  productRepo.getReferenceById(id);
             update.setTitle(pr.getTitle());
             update.setImage(pr.getImage());
@@ -212,9 +229,10 @@ public class ProductService {
                     HttpStatus.OK
                     );
         } catch (Exception e){
+            e.printStackTrace();
             return new ResponseEntity<>(
                     new ResponseRequest(HttpStatus.BAD_REQUEST.value(),
-                            "Gagal akses", e),
+                            "Data tidak sesuai syarat"),
                     HttpStatus.BAD_REQUEST
             );
         }

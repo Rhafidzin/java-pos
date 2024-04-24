@@ -8,6 +8,7 @@ import com.example.demo.entity.transaction.TransactionsDetail;
 import com.example.demo.repository.transaction.TransactionDetailRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,38 +21,62 @@ public class TransactionDetailService {
     @Autowired
     TransactionDetailRepo transactionDetailRepo;
 
-    public ResponseRequest readAllTransactionDetail() {
+    public ResponseEntity<ResponseRequest> readAllTransactionDetail() {
         try{
-            Object result = transactionDetailRepo.findAll();
-            if(((List<?>) result).isEmpty()){
-                return new ResponseRequest(HttpStatus.BAD_REQUEST.value(), "Tabel kosong", result);
+            List<TransactionsDetail> result = transactionDetailRepo.findAll();
+            if(result.isEmpty()){
+                return new ResponseEntity<>(
+                    new ResponseRequest(HttpStatus.BAD_REQUEST.value(), "Tabel kosong", result),
+                        HttpStatus.BAD_REQUEST
+                );
+
             }
-            return new ResponseRequest(HttpStatus.ACCEPTED.value(), "Data berhasil diread", result);
+            return new ResponseEntity<>(
+                    new ResponseRequest(HttpStatus.OK.value(), "Data berhasil diread", result),
+                    HttpStatus.OK
+            );
 
         } catch(Exception e){
-            return new ResponseRequest(HttpStatus.BAD_REQUEST.value(), "Terjadi Kesalahan");
+            return new ResponseEntity<>(
+                    new ResponseRequest(HttpStatus.BAD_REQUEST.value(), "Terjadi Kesalahan"),
+                    HttpStatus.BAD_REQUEST
+            );
         }
 
     }
 
-    public ResponseRequest createTransactionDetail(TransactionDetailRequest tdr) {
+    public ResponseEntity<ResponseRequest> createTransactionDetail(TransactionDetailRequest tdr) {
         TransactionsDetail transactionsDetail = new TransactionsDetail();
         transactionsDetail.setQuantity(tdr.getQuantity());
         transactionsDetail.setProduct(tdr.getProduct());
         transactionsDetail.setSubtotal(tdr.getSubtotal());
         transactionsDetail.setTransaction(tdr.getTransaction());
         Object result = transactionDetailRepo.save(transactionsDetail);
-        return new ResponseRequest(HttpStatus.CREATED.value(), "Data berhasil diinput", result);
+        return new ResponseEntity<>(
+                new ResponseRequest(HttpStatus.CREATED.value(), "Data berhasil diinput", result),
+                HttpStatus.CREATED
+        );
     }
 
-    public ResponseRequest findTransactionDetailId(int id) {
-        Optional<TransactionsDetail> result = transactionDetailRepo.findById(id);
-
-        if (result.isEmpty()){
-            return new ResponseRequest(HttpStatus.BAD_REQUEST.value(), "ID tidak ditemukan");
-        } else {
-
-            return new ResponseRequest(HttpStatus.OK.value(), "Data berhasil diread", result);
+    public ResponseEntity<ResponseRequest> findTransactionDetailId(int id) {
+        try{
+            Optional<TransactionsDetail> result = transactionDetailRepo.findById(id);
+            if (result.isEmpty()){
+                return new ResponseEntity<>(
+                        new ResponseRequest(HttpStatus.NOT_FOUND.value(), "ID tidak ditemukan"),
+                        HttpStatus.NOT_FOUND
+                );
+            } else {
+                return new ResponseEntity<>(
+                        new ResponseRequest(HttpStatus.OK.value(), "Data berhasil diread", result),
+                        HttpStatus.OK
+                );
+            }
+        } catch (Exception e){
+            return new ResponseEntity<>(
+                    new ResponseRequest(HttpStatus.BAD_REQUEST.value(), "Terjadi kesalahan"),
+                    HttpStatus.BAD_REQUEST
+            );
         }
     }
 
